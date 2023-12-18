@@ -1,0 +1,75 @@
+
+User name :  Milan-Kotadiya
+Password : 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
+
+Step 0 - Initialise git = $ git init
+
+step 1 - Creating New Branch = $git switch -c <Branch name>  or git branch <name of branch>
+
+Step 2 - Go to That Branch =$ git checkout -b <Branch Name> or git checkout <branch name>
+
+Step 3 - Add Remote Main Branch = $ git remote add origin <https://github.com/Milan-Kotadiya/Humans-Milan (Url of main Branch)>.git
+
+Step 4 - Get Data From Main Branch = $ git pull origin <Branch Name> 
+
+			if it is not work then use= $ git pull origin <Branch Name> --allow-unrelated-histories
+
+Step 5 - Do change And save
+
+Step 6 - Update on branch = $ git add -A or file name
+
+Step 7 - add comment for save the change = $ git commit -m "Comment of change"
+
+
+For Merge sub branch to main branch
+
+Step 8 - go to main branch = $ git checkout -b <name of main branch> 
+
+Step 9 - Then merge sub branch = $ git merge <name of sub-branch>
+ 
+
+Other Commands 
+
+For Create and go to new branch = $ git checkout -b <new branch name>
+
+Create and add remote = $ git remote add origin <url of this repository>.git
+
+see all remote origins = $ git remote
+
+see remote version (for push and fetch) = $ git remote -v
+
+delete git branch = $ git branch --delete <branch name>
+
+
+
+
+git pull/push process
+
+1. Get data from main branch = $ git pull origin <main branch>
+
+	After change done
+	
+2. Update changed files = $ git add . or git add -A
+
+3. Do comment what is update = $ git commit -m "msg what is changes"
+
+4. Then Pull it to branch = $ git push origin <Branch name>
+
+
+For Cloning Private Repo 👍
+
+https://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:x-oauth-basic@github.com/Milan-Kotadiya/Humans-Softtech.git
+
+
+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 = Token
+Milan-Kotadiya= git username
+Humans-Softtech= git repo name
+
+
+
+
+git branch :-> to view all branch 
+git checkout <branch name> :-> to switch between anoterh branch 
+git branch <new branch name > :-> to create new branch 
+git branch --delete <branch name> :-> to delete branch 
+git remove origin -> git remote remove origin
