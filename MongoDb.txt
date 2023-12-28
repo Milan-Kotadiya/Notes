@@ -1,0 +1,185 @@
+const mongoose = require('mongoose');
+
+const productSchema = new mongoose.Schema({
+  name: String,
+  category: String,
+  price: Number,
+  quantity: Number,
+  description: String
+});
+
+const Product = mongoose.model('Product', productSchema);
+
+
+Query Operators:
+  Comparison Operators:
+    $eq: Matches values that are equal to a specified value.
+      Product.find({ price: { $eq: 10 } })
+
+    $ne: Matches all values that are not equal to a specified value.
+      Product.find({ price: { $ne: 20 } })
+
+    $gt: Matches values that are greater than a specified value.
+      Product.find({ price: { $gt: 15 } })
+
+    $lt: Matches values that are less than a specified value.
+      Product.find({ price: { $lt: 30 } })
+
+    $gte: Matches values that are greater than or equal to a specified value.
+      Product.find({ price: { $gte: 20 } })
+
+    $lte: Matches values that are less than or equal to a specified value.
+      Product.find({ price: { $lte: 50 } })
+
+    $in: Matches any of the values specified in an array.
+      Product.find({ category: { $in: ['Electronics', 'Clothing'] } })
+
+    $nin: Matches none of the values specified in an array.
+      Product.find({ category: { $nin: ['Electronics', 'Clothing'] } })
+
+
+  Logical Operators:
+    $and: Joins query clauses with a logical AND.
+      Product.find({ $and: [{ price: { $gt: 20 } }, { category: 'Electronics' }] })
+     
+    $or: Joins query clauses with a logical OR.
+      Product.find({ $or: [{ price: { $lt: 10 } }, { category: 'Clothing' }] })
+     
+    $not: Inverts the effect of a query expression and selects documents that do not match the query expression.
+      Product.find({ price: { $not: { $gt: 30 } } })
+     
+    $nor: Joins query clauses with a logical NOR.
+      Product.find({ $nor: [{ price: { $gt: 50 } }, { category: 'Electronics' }] })
+     
+
+  Element Operators:
+    $exists: Matches documents that have the specified field.
+      // Find products where the 'description' field exists
+      Product.find({ description: { $exists: true } })
+
+    $type: Matches documents based on the BSON type.
+      // Find products where the 'price' field is of type 'double' (BSON type 1)
+      Product.find({ price: { $type: 1 } })
+
+
+  Evaluation Operators:
+    $expr: Allows the use of aggregation expressions within the query language.
+      Product.find({
+        $expr: {
+          $gt: ['$price', '$quantity'] // Example: Find where price is greater than quantity
+        }
+      })
+
+    $regex: Matches documents that contain a specified string pattern.
+      // Find products where the 'name' field matches a specific pattern
+      Product.find({ name: { $regex: /pattern/ } })
+
+
+  Array Operators:
+    $all: Matches arrays that contain all elements specified in the query.
+      // Find products where the 'tags' array contains all specified elements
+      Product.find({ tags: { $all: ['tag1', 'tag2'] } })
+
+    $elemMatch: Matches documents that contain an array field with at least one element that matches specified criteria.
+      // Find products where 'items' array contains an element with price greater than 50
+      Product.find({ items: { $elemMatch: { price: { $gt: 50 } } } })
+
+    $size: Matches arrays with a specific number of elements.
+      // Find products where the 'categories' array has a specific number of elements (e.g., 3)
+      Product.find({ categories: { $size: 3 } })
+
+Update Operators:
+  Field Update Operators:
+    $set: Sets the value of a field in a document
+      Product.updateOne({ _id: productId }, { $set: { price: 20 } })
+
+    $unset: Removes the specified field from a document
+      Product.updateOne({ _id: productId }, { $unset: { category: 1 } })
+
+    $inc: Increments the value of a field by a specified amount
+      Product.updateOne({ _id: productId }, { $inc: { quantity: 5 } })
+
+    $push: Appends a specified value to an array field
+      Product.updateOne({ _id: productId }, { $push: { tags: 'newTag' } })
+
+    $pull: Removes all array elements that match a specified query
+      Product.updateOne({ _id: productId }, { $pull: { tags: 'tagToRemove' } })
+
+    $addToSet: Adds elements to an array field only if they do not already exist
+      Product.updateOne({ _id: productId }, { $addToSet: { tags: 'newTag' } })
+
+    $pop: Removes the first or last element of an array
+      Product.updateOne({ _id: productId }, { $pop: { tags: -1 } }) // -1 for last, 1 for first
+
+    $rename: Renames a field
+      Product.updateOne({ _id: productId }, { $rename: { 'oldFieldName': 'newFieldName' } })
+
+  Array Update Operators:
+    $[]: Acts as a placeholder to update all elements that match the array filters condition
+      Product.updateMany(
+        { _id: productId },
+        { $set: { 'comments.$[elem].approved': true } },
+        { arrayFilters: [{ 'elem.rating': { $gte: 9 } }] }
+      )
+
+
+MATHEMATICAL OPERATORS 
+  $sum: Calculate Total Quantity by Category
+    Product.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          totalQuantity: { $sum: '$quantity' }
+        }
+      }
+    ])
+
+  $avg: Calculate Average Price by Category
+    Product.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          avgPrice: { $avg: '$price' }
+        }
+      }
+    ])
+
+  $min: Find Minimum Price by Category
+    Product.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          minPrice: { $min: '$price' }
+        }
+      }
+    ])
+
+  $max: Find Maximum Price by Category
+    Product.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          maxPrice: { $max: '$price' }
+        }
+      }
+    ])
+
+  $stdDevPop and $stdDevSamp: Calculate Population and Sample Standard Deviation
+    Product.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          stdDevPopPrice: { $stdDevPop: '$price' },
+          stdDevSampPrice: { $stdDevSamp: '$price' }
+        }
+      }
+    ])
+
+  $multiply: Multiply Price and Quantity
+    Product.aggregate([
+      {
+        $project: {
+          totalAmount: { $multiply: ['$price', '$quantity'] }
+        }
+      }
+    ])
