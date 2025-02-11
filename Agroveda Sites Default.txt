@@ -1,0 +1,36 @@
+server {
+
+        listen 443 ssl default_server;
+        listen [::]:443 ssl default_server;
+        server_name sharanamagritech.com www.sharanamagritech.com;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                proxy_pass http://localhost:8080;
+                proxy_http_version 1.1;
+                proxy_buffering off;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+
+    ssl_certificate /etc/letsencrypt/live/sharanamagritech.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/sharanamagritech.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+}
+server {
+    listen 80;
+    server_name sharanamagritech.com;
+
+    root /var/www/html/build;  # Make sure the root is set to the 'build' folder
+
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;  # This ensures any request is routed to index.html for a React app
+    }
+}
