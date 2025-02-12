@@ -1,0 +1,614 @@
+📂 src
+ ┣ 📂 assets
+ ┃ ┗ 📂 fonts
+ ┃   ┗ SpaceMono-Regular.ttf
+ ┣ 📂 components
+ ┃ ┣ 📜 Button.tsx
+ ┃ ┣ 📜 Input.tsx
+ ┃ ┗ 📜 ThemeProvider.tsx
+ ┣ 📂 hooks
+ ┃ ┗ 📜 useColorScheme.ts
+ ┣ 📂 navigation
+ ┃ ┗ 📜 AppNavigator.tsx
+ ┣ 📂 screens
+ ┃ ┗ 📂 auth
+ ┃   ┣ 📜 WelcomeScreen.tsx
+ ┃   ┣ 📜 LoginScreen.tsx
+ ┃   ┗ 📜 RegisterScreen.tsx
+ ┣ 📂 theme
+ ┃ ┣ 📜 Colors.ts
+ ┃ ┗ 📜 ThemeContext.tsx
+ ┣ 📜 App.tsx
+ ┣ 📜 RootLayout.tsx
+
+
+
+ ✅ 1. Theme Configuration (theme/Colors.ts)
+const tintColorLight = "#0a7ea4";
+const tintColorDark = "#fff";
+
+export const Colors = {
+  light: {
+    text: "#1A1A1A",
+    background: "#F8F9FD",
+    tint: tintColorLight,
+    icon: "#687076",
+    tabIconDefault: "#687076",
+    primary: "#000000",
+    secondary: "#FFFFFF",
+    tabIconSelected: tintColorLight,
+  },
+  dark: {
+    text: "#F8F9FD",
+    background: "#1A1A1A",
+    tint: tintColorDark,
+    icon: "#9BA1A6",
+    primary: "#FFFFFF",
+    secondary: "#000000",
+    tabIconDefault: "#9BA1A6",
+    tabIconSelected: tintColorDark,
+  },
+};
+✅ 2. Theme Provider (theme/ThemeContext.tsx)
+
+import React, { createContext, useContext } from "react";
+import { useColorScheme } from "react-native";
+import { Colors } from "./Colors";
+
+const ThemeContext = createContext(Colors.light);
+
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? Colors.dark : Colors.light;
+
+  return (
+    <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>
+  );
+};
+
+export const useTheme = () => useContext(ThemeContext);
+✅ 3. Common Components
+🔹 Button Component (components/Button.tsx)
+
+import React from "react";
+import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { useTheme } from "../theme/ThemeContext";
+
+interface ButtonProps {
+  title: string;
+  onPress: () => void;
+}
+
+const Button: React.FC<ButtonProps> = ({ title, onPress }) => {
+  const { primary, secondary } = useTheme();
+
+  return (
+    <TouchableOpacity
+      style={[styles.button, { backgroundColor: primary }]}
+      onPress={onPress}
+    >
+      <Text style={[styles.text, { color: secondary }]}>{title}</Text>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  button: {
+    padding: 15,
+    borderRadius: 10,
+    width: "100%",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
+
+export default Button;
+🔹 Input Component (components/Input.tsx)
+
+import React from "react";
+import { TextInput, StyleSheet } from "react-native";
+import { useTheme } from "../theme/ThemeContext";
+
+interface InputProps {
+  placeholder: string;
+  secureTextEntry?: boolean;
+}
+
+const Input: React.FC<InputProps> = ({ placeholder, secureTextEntry }) => {
+  const { text, background } = useTheme();
+
+  return (
+    <TextInput
+      style={[styles.input, { borderColor: text, color: text, backgroundColor: background }]}
+      placeholder={placeholder}
+      placeholderTextColor={text}
+      secureTextEntry={secureTextEntry}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  input: {
+    width: "100%",
+    padding: 15,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+});
+
+export default Input;
+✅ 4. Screens
+🔹 Welcome Screen (screens/WelcomeScreen.tsx)
+
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import Button from "../components/Button";
+import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "../theme/ThemeContext";
+
+const WelcomeScreen = () => {
+  const navigation = useNavigation();
+  const { background, text } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: background }]}>
+      <Text style={[styles.title, { color: text }]}>Welcome!</Text>
+      <Button title="Login" onPress={() => navigation.navigate("Login")} />
+      <Button title="Register" onPress={() => navigation.navigate("Register")} />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+});
+
+export default WelcomeScreen;
+🔹 Login Screen (screens/LoginScreen.tsx)
+
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "../theme/ThemeContext";
+
+const LoginScreen = () => {
+  const navigation = useNavigation();
+  const { background, text } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: background }]}>
+      <Text style={[styles.title, { color: text }]}>Login</Text>
+      <Input placeholder="Email" />
+      <Input placeholder="Password" secureTextEntry />
+      <Button title="Login" onPress={() => {}} />
+      <Text onPress={() => navigation.navigate("Register")} style={[styles.link, { color: text }]}>
+        Register Now
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  link: {
+    marginTop: 15,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+});
+
+export default LoginScreen;
+🔹 Register Screen (screens/RegisterScreen.tsx)
+
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "../theme/ThemeContext";
+
+const RegisterScreen = () => {
+  const navigation = useNavigation();
+  const { background, text } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: background }]}>
+      <Text style={[styles.title, { color: text }]}>Register</Text>
+      <Input placeholder="Username" />
+      <Input placeholder="Email" />
+      <Input placeholder="Password" secureTextEntry />
+      <Input placeholder="Confirm Password" secureTextEntry />
+      <Button title="Register" onPress={() => {}} />
+      <Text onPress={() => navigation.navigate("Login")} style={[styles.link, { color: text }]}>
+        Login Now
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  link: {
+    marginTop: 15,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+});
+
+export default RegisterScreen;
+
+
+1️⃣ Define Navigation Types (types/navigation.ts)
+Create a new file: 📂 src/types/navigation.ts
+
+
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+export type RootStackParamList = {
+  Welcome: undefined;
+  Login: undefined;
+  Register: undefined;
+};
+
+export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
+2️⃣ Use NavigationProps in Screens
+Update LoginScreen.tsx, RegisterScreen.tsx, and WelcomeScreen.tsx like this:
+
+
+import { View, Text, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "../types/navigation";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import { useTheme } from "../theme/ThemeContext";
+
+const LoginScreen = () => {
+  const navigation = useNavigation<NavigationProps>(); // ✅ Typed navigation
+  const { background, text } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: background }]}>
+      <Text style={[styles.title, { color: text }]}>Login</Text>
+      <Input placeholder="Email" />
+      <Input placeholder="Password" secureTextEntry />
+      <Button title="Login" onPress={() => {}} />
+      <Text 
+        onPress={() => navigation.navigate("Register")} // ✅ No more TypeScript error
+        style={[styles.link, { color: text }]}
+      >
+        Register Now
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  link: {
+    marginTop: 15,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+});
+
+export default LoginScreen;
+3️⃣ Ensure Screens Are Registered in Navigation
+📂 src/navigation/AppNavigator.tsx
+
+
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import WelcomeScreen from "../screens/WelcomeScreen";
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import { RootStackParamList } from "../types/navigation";
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const AppNavigator = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Welcome">
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default AppNavigator;
+4️⃣ Update App.tsx
+📂 App.tsx
+
+
+import React from "react";
+import { ThemeProvider } from "./theme/ThemeContext";
+import AppNavigator from "./navigation/AppNavigator";
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppNavigator />
+    </ThemeProvider>
+  );
+}
+
+
+✅ Updated RootLayout.tsx
+📂 src/RootLayout.tsx
+
+
+import {
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import "react-native-reanimated";
+
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/theme/Colors";
+import { ThemeContext, ThemeType } from "@/theme/ThemeContext";
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
+
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
+  // Define light and dark theme settings
+  const CustomLightTheme: ThemeType = {
+    ...NavigationDefaultTheme,
+    colors: Colors.light,
+  };
+
+  const CustomDarkTheme: ThemeType = {
+    ...NavigationDarkTheme,
+    colors: Colors.dark,
+  };
+
+  const [loaded] = useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+  });
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return (
+    <ThemeContext.Provider value={colorScheme === "dark" ? CustomDarkTheme : CustomLightTheme}>
+      <ThemeProvider value={colorScheme === "dark" ? CustomDarkTheme : CustomLightTheme}>
+        <Stack>
+          <Stack.Screen name="auth/welcome" options={{ headerShown: false }} />
+          <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+          <Stack.Screen name="auth/register" options={{ headerShown: false }} />
+        </Stack>
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      </ThemeProvider>
+    </ThemeContext.Provider>
+  );
+}
+✅ Updated Theme Configuration
+📂 src/theme/Colors.ts
+
+
+const tintColorLight = "#0a7ea4";
+const tintColorDark = "#fff";
+
+export const Colors = {
+  light: {
+    text: "#1A1A1A",
+    background: "#F8F9FD",
+    tint: tintColorLight,
+    icon: "#687076",
+    tabIconDefault: "#687076",
+    primary: "#000000",
+    secondary: "#FFFFFF",
+    tabIconSelected: tintColorLight,
+  },
+  dark: {
+    text: "#F8F9FD",
+    background: "#1A1A1A",
+    tint: tintColorDark,
+    icon: "#9BA1A6",
+    primary: "#FFFFFF",
+    secondary: "#000000",
+    tabIconDefault: "#9BA1A6",
+    tabIconSelected: tintColorDark,
+  },
+};
+📂 src/theme/ThemeContext.tsx
+
+
+import { createContext, useContext } from "react";
+import { DefaultTheme, DarkTheme, Theme } from "@react-navigation/native";
+import { Colors } from "./Colors";
+
+export type ThemeType = Theme & {
+  colors: typeof Colors.light | typeof Colors.dark;
+};
+
+const LightTheme: ThemeType = {
+  ...DefaultTheme,
+  colors: Colors.light,
+};
+
+const DarkTheme: ThemeType = {
+  ...DarkTheme,
+  colors: Colors.dark,
+};
+
+export const ThemeContext = createContext<ThemeType>(LightTheme);
+
+export const useTheme = () => useContext(ThemeContext);
+✅ Screens in auth/ Folder
+📂 src/screens/auth/WelcomeScreen.tsx
+
+
+import { View, Text, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "@/theme/ThemeContext";
+import Button from "@/components/Button";
+
+const WelcomeScreen = () => {
+  const navigation = useNavigation();
+  const { colors } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Welcome</Text>
+      <Button title="Login" onPress={() => navigation.navigate("auth/login")} />
+      <Button title="Register" onPress={() => navigation.navigate("auth/register")} />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+});
+
+export default WelcomeScreen;
+📂 src/screens/auth/LoginScreen.tsx
+
+
+import { View, Text, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "@/theme/ThemeContext";
+import Input from "@/components/Input";
+import Button from "@/components/Button";
+
+const LoginScreen = () => {
+  const navigation = useNavigation();
+  const { colors } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Login</Text>
+      <Input placeholder="Email" />
+      <Input placeholder="Password" secureTextEntry />
+      <Button title="Login" onPress={() => {}} />
+      <Text onPress={() => navigation.navigate("auth/register")} style={styles.link}>
+        Register Now
+      </Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  link: {
+    marginTop: 15,
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#0a7ea4",
+  },
+});
+
+export default LoginScreen;
+📂 src/screens/auth/RegisterScreen.tsx
+
+
+import { View, Text, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "@/theme/ThemeContext";
+import Input from "@/components/Input";
+import Button from "@/components/Button";
+
+const RegisterScreen = () => {
+  const navigation = useNavigation();
+  const { colors } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Register</Text>
+      <Input placeholder="Username" />
+      <Input placeholder="Email" />
+      <Input placeholder="Password" secureTextEntry />
+      <Input placeholder="Confirm password" secureTextEntry />
+      <Button title="Register" onPress={() => {}} />
+      <Text onPress={() => navigation.navigate("auth/login")} style={styles.link}>
+        Login Now
+      </Text>
+    </View>
+  );
+};
+
+export default RegisterScreen;
